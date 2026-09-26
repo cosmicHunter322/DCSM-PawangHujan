@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Storage Gateway</title>
+</head>
+<body>
+    <div>
+        <span><b>Secure Storage Gateway Dashboard</b></span> | 
+        <span>User: <b>{{ user.username }}</b> (Role: {{ user.role }} | Clearance: Level {{ user.clearance }})</span> | 
+        <a href="/logout">Logout</a>
+    </div>
+
+    <hr>
+
+    <div style="width: 400px; margin-bottom: 20px;">
+        <h4>Upload File ke Cluster</h4>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div style="margin-bottom: 10px;">
+                <input type="file" name="file" required>
+            </div>
+            <button type="submit">Upload & Replicate</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <div>
+        <h4>Daftar File di Storage Cluster</h4>
+        <p>Node Aktif: <b>{{ source_node }}</b></p>
+
+        <table border="1" cellpadding="6" cellspacing="0" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Nama File</th>
+                    <th>Ukuran</th>
+                    <th>SHA-256 Checksum</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if files %}
+                    {% for f in files %}
+                    {% set fname = f.filename if f.filename is defined else f['filename'] %}
+                    {% set size = f.size_bytes if f.size_bytes is defined else f['size_bytes'] %}
+                    {% set hash_val = f.sha256_hash if f.sha256_hash is defined else f['sha256_hash'] %}
+                    <tr>
+                        <td><b>{{ fname }}</b></td>
+                        <td>{{ (size / 1024)|round(2) }} KB</td>
+                        <td><code>{{ hash_val[:16] }}...</code></td>
+                        <td>
+                            <a href="/download/{{ fname }}">Download</a> | 
+                            <a href="/delete/{{ fname }}" onclick="return confirm('Yakin ingin menghapus file ini dari cluster?')">Hapus</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" align="center">
+                            <i>Belum ada file tersimpan di storage cluster.</i>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
