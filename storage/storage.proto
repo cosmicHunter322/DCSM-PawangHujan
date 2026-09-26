@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package storage;
+
+service StorageService {
+  rpc StoreFile (StoreFileRequest) returns (StoreFileResponse);
+  rpc ReplicateFile (ReplicateFileRequest) returns (ReplicateFileResponse);
+  rpc ReadFile (ReadFileRequest) returns (ReadFileResponse);
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
+}
+
+message StoreFileRequest {
+  string filename = 1;
+  bytes file_content = 2;
+}
+
+message StoreFileResponse {
+  bool success = 1;
+  string message = 2;
+  string sha256_hash = 3;
+}
+
+message ReplicateFileRequest {
+  string filename = 1;
+  bytes file_content = 2;
+  string primary_sha256 = 3;
+}
+
+message ReplicateFileResponse {
+  bool success = 1;
+  string message = 2;
+  string backup_sha256 = 3;
+}
+
+message ReadFileRequest {
+  string filename = 1;
+}
+
+message ReadFileResponse {
+  bool success = 1;
+  string message = 2;
+  bytes file_content = 3;
+  string sha256_hash = 4;
+}
+
+message ListFilesRequest {}
+
+message FileInfo {
+  string filename = 1;
+  int64 size_bytes = 2;
+  string sha256_hash = 3;
+}
+
+message ListFilesResponse {
+  bool success = 1;
+  repeated FileInfo files = 2;
+}
+
+message DeleteFileRequest {
+  string filename = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string message = 2;
+}
